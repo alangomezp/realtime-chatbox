@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbox</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+      color-scheme: light dark;
+    }
+    #chatbox {
+      border: 2px solid #fff;
+      width: 500px;
+      height: 600px;
+      margin: 0 auto;
+      position: relative;
+      top: 50px;
+      border-radius: 5px;
+    }
+    #chatbox > #messages-section {
+      height: 550px;
+      overflow-y: scroll;
+      scroll-behavior: smooth;
+    }
+    #chatbox > div > .messages {
+      padding: 15px;
+      font-size: 16px;
+      border-radius: 5px;
+    }
+    #chatbox > div > .messages:last-child {
+      background-color: midnightblue;
+    }
+    #form {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    #form > input {
+      width: 370px;
+      margin-left: 10px;
+      height: 25px;
+      border-radius: 30px;
+      padding: 5px;
+    }
+
+    #form > button {
+      width: 80px;
+      height: 30px;
+      cursor: pointer;
+    }
+  </style>
+  <body>
+    <section id="chatbox">
+      <form action="" id="form">
+        <input
+          type="text"
+          autocomplete="off"
+          placeholder="Type a message"
+          value=""
+          id="message"
+        />
+        <button type="submit">Enviar</button>
+      </form>
+      <div id="messages-section"></div>
+    </section>
+  </body>
+  <script type="module">
+    import io from "https://cdn.jsdelivr.net/npm/socket.io-client@4.7.4/+esm";
+    const socket = io(`http://localhost:3000`);
+
+    const input = document.getElementById("message");
+    document.getElementById("form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (input.value === "") return;
+      socket.emit("message", input.value);
+      input.value = "";
+    });
+
+    socket.on("message", (content) => {
+      const messagesSection = document.getElementById("messages-section");
+      const newMessage = document.createElement("p");
+      newMessage.textContent = content;
+      newMessage.className = "messages";
+      messagesSection.appendChild(newMessage);
+      messagesSection.scrollTop = messagesSection.scrollHeight;
+    });
+  </script>
+</html>
